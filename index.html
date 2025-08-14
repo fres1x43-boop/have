@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CheckValidUsername</title>
+    <title>Username Checker</title>
     <style>
         :root {
             --bg: #000000;
@@ -13,22 +13,16 @@
             --error: #ff453a;
             --success: #30d158;
             --tabbar: #2c2c2e;
-            --tab-inactive: rgba(255, 255, 255, 0.3);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text);
+            margin: 0;
+            padding: 0;
             height: 100vh;
             overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
         }
 
         /* Loading Screen */
@@ -47,23 +41,16 @@
             transition: opacity 0.5s ease;
         }
 
-        .loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
         .loading-gif {
             width: 120px;
             height: 120px;
             margin-bottom: 20px;
-            border-radius: 24px;
-            object-fit: cover;
+            border-radius: 20px;
         }
 
         .app-name {
             font-size: 22px;
             font-weight: 600;
-            margin-top: 10px;
         }
 
         /* Main App */
@@ -81,7 +68,6 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            -webkit-overflow-scrolling: touch;
         }
 
         /* Home Tab */
@@ -90,12 +76,6 @@
             border-radius: 14px;
             padding: 20px;
             margin-bottom: 20px;
-        }
-
-        h2 {
-            font-size: 18px;
-            margin-bottom: 16px;
-            font-weight: 600;
         }
 
         input {
@@ -107,12 +87,6 @@
             color: var(--text);
             font-size: 16px;
             margin-bottom: 16px;
-            backdrop-filter: blur(10px);
-        }
-
-        input:focus {
-            outline: none;
-            background: rgba(120, 120, 128, 0.3);
         }
 
         button {
@@ -125,15 +99,10 @@
             font-size: 17px;
             font-weight: 500;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s;
         }
 
-        button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        button:active:not(:disabled) {
+        button:active {
             transform: scale(0.98);
         }
 
@@ -143,12 +112,6 @@
             padding: 16px;
             margin-top: 20px;
             display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .user-info {
@@ -165,8 +128,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
-            font-size: 20px;
             overflow: hidden;
         }
 
@@ -174,16 +135,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
-        .username {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .user-status {
-            font-size: 14px;
-            opacity: 0.8;
         }
 
         /* Profile Tab */
@@ -197,24 +148,13 @@
             border-radius: 40px;
             background: var(--accent);
             margin: 0 auto 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            font-weight: bold;
             overflow: hidden;
-        }
-
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         .profile-name {
             font-size: 20px;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
         .profile-username {
@@ -226,30 +166,32 @@
         .tab-bar {
             display: flex;
             background: var(--tabbar);
-            padding: 12px 0;
+            padding: 10px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .tab {
             flex: 1;
             text-align: center;
-            padding: 8px;
+            padding: 10px;
             cursor: pointer;
             opacity: 0.5;
             transition: opacity 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
         }
 
         .tab.active {
             opacity: 1;
         }
 
-        .tab-icon {
-            font-size: 20px;
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+            display: inline-block;
         }
 
         /* History */
@@ -260,7 +202,6 @@
             border-radius: 10px;
             margin-bottom: 8px;
             background: rgba(120, 120, 128, 0.1);
-            animation: fadeIn 0.3s ease;
         }
 
         .history-item-avatar {
@@ -272,7 +213,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
             overflow: hidden;
         }
 
@@ -293,23 +233,13 @@
             font-size: 11px;
             opacity: 0.5;
         }
-
-        /* Animations */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .spinner {
-            animation: spin 1s linear infinite;
-        }
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <img src="https://i.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.webp" class="loading-gif" alt="Loading">
-        <div class="app-name">CheckValidUsername</div>
+        <div class="app-name">Username Checker</div>
     </div>
 
     <!-- Main App -->
@@ -318,18 +248,18 @@
         <div class="tab-content" id="homeTab">
             <div class="card">
                 <h2>Проверить юзернейм</h2>
-                <input type="text" id="usernameInput" placeholder="@username" autocomplete="off">
+                <input type="text" id="usernameInput" placeholder="@username">
                 <button id="checkButton">Проверить</button>
             </div>
 
             <div class="result-card" id="resultCard">
                 <div class="user-info">
                     <div class="user-avatar" id="userAvatar">
-                        <span id="avatarText">U</span>
+                        <!-- Avatar will be inserted here -->
                     </div>
                     <div>
-                        <div class="username" id="resultUsername">@username</div>
-                        <div class="user-status" id="resultStatus">Статус</div>
+                        <div id="resultUsername">@username</div>
+                        <div id="resultStatus">Статус</div>
                     </div>
                 </div>
             </div>
@@ -342,12 +272,13 @@
         <div class="tab-content" id="profileTab" style="display: none;">
             <div class="card profile">
                 <div class="profile-avatar" id="profileAvatar">
-                    <span id="profileAvatarText">U</span>
+                    <!-- Profile avatar will be inserted here -->
                 </div>
                 <div class="profile-name" id="profileName">User</div>
                 <div class="profile-username" id="profileUsername">@username</div>
+                <div id="profileId" style="opacity: 0.7; font-size: 14px; margin-bottom: 20px;">ID: loading...</div>
                 
-                <div style="margin-top: 30px;">
+                <div style="margin-top: 20px;">
                     <button id="clearHistoryButton" style="background: var(--error); margin-bottom: 12px;">Очистить историю</button>
                     <button id="refreshProfileButton">Обновить профиль</button>
                 </div>
@@ -356,64 +287,12 @@
 
         <!-- Tab Bar -->
         <div class="tab-bar">
-            <div class="tab active" id="homeTabButton">
-                <div class="tab-icon">🔍</div>
-                <div>Проверка</div>
-            </div>
-            <div class="tab" id="profileTabButton">
-                <div class="tab-icon">👤</div>
-                <div>Профиль</div>
-            </div>
+            <div class="tab active" id="homeTabButton">Главная</div>
+            <div class="tab" id="profileTabButton">Профиль</div>
         </div>
     </div>
 
     <script>
-        // Telegram Username Checker Class
-        class TelegramUsernameChecker {
-            static async checkUsername(username) {
-                if (!username) throw new Error("Юзернейм не указан");
-
-                try {
-                    // In a real app, this should be a server-side call
-                    console.log(`Checking username: @${username}`);
-                    
-                    // Simulate API delay
-                    await new Promise(resolve => setTimeout(resolve, 800));
-                    
-                    // Random result for demo (in a real app, use Telegram API)
-                    const isTaken = Math.random() > 0.5;
-                    
-                    if (isTaken) {
-                        return {
-                            isTaken: true,
-                            userData: {
-                                id: Math.floor(Math.random() * 100000),
-                                firstName: this.generateRandomName(),
-                                username: username,
-                                avatar: this.generateRandomAvatar(username)
-                            }
-                        };
-                    } else {
-                        return { isTaken: false, userData: null };
-                    }
-                } catch (error) {
-                    console.error("Check error:", error);
-                    return { isTaken: false, userData: null };
-                }
-            }
-
-            static generateRandomAvatar(username) {
-                const colors = ["FF5733", "33FF57", "3357FF", "F033FF", "FF33F0"];
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                return `https://ui-avatars.com/api/?name=${username.charAt(0)}&background=${color}&color=fff&length=1`;
-            }
-
-            static generateRandomName() {
-                const names = ["Алексей", "Мария", "Иван", "Екатерина", "Дмитрий", "Анна", "Сергей", "Ольга"];
-                return names[Math.floor(Math.random() * names.length)];
-            }
-        }
-
         // Main App Class
         class UsernameCheckerApp {
             constructor() {
@@ -441,15 +320,14 @@
                 this.checkButton = document.getElementById('checkButton');
                 this.resultCard = document.getElementById('resultCard');
                 this.userAvatar = document.getElementById('userAvatar');
-                this.avatarText = document.getElementById('avatarText');
                 this.resultUsername = document.getElementById('resultUsername');
                 this.resultStatus = document.getElementById('resultStatus');
                 
                 // Profile
                 this.profileAvatar = document.getElementById('profileAvatar');
-                this.profileAvatarText = document.getElementById('profileAvatarText');
                 this.profileName = document.getElementById('profileName');
                 this.profileUsername = document.getElementById('profileUsername');
+                this.profileId = document.getElementById('profileId');
                 this.clearHistoryButton = document.getElementById('clearHistoryButton');
                 this.refreshProfileButton = document.getElementById('refreshProfileButton');
                 
@@ -473,7 +351,7 @@
                 this.refreshProfileButton.addEventListener('click', () => this.loadProfile());
             }
 
-            initApp() {
+            async initApp() {
                 // Simulate loading (in a real app, you might load actual data here)
                 setTimeout(() => {
                     this.loadingScreen.classList.add('hidden');
@@ -482,7 +360,7 @@
                     // Load profile and history
                     this.loadProfile();
                     this.renderHistory();
-                }, 2000);
+                }, 1500);
             }
 
             switchTab(tab) {
@@ -509,32 +387,79 @@
 
                 // Disable button and show loading state
                 this.checkButton.disabled = true;
-                this.checkButton.innerHTML = '<span class="spinner">⏳</span> Проверяем...';
+                this.checkButton.innerHTML = '<span class="spinner">🌀</span> Проверяем...';
                 this.resultCard.style.display = 'none';
 
                 try {
-                    const result = await TelegramUsernameChecker.checkUsername(username);
+                    // Try to get user data from Telegram
+                    let userData = null;
                     
-                    if (result.isTaken) {
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        // In Telegram Mini Apps, we can try to get user info
+                        try {
+                            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getChat?chat_id=@${username}`);
+                            const data = await response.json();
+                            
+                            if (data.ok && data.result) {
+                                userData = {
+                                    isTaken: true,
+                                    first_name: data.result.first_name || "Пользователь",
+                                    username: username,
+                                    photo: data.result.photo ? 
+                                        `https://api.telegram.org/file/bot${TELEGRAM_BOT_TOKEN}/${data.result.photo.small_file_id}` : 
+                                        null,
+                                    id: data.result.id
+                                };
+                            }
+                        } catch (e) {
+                            console.error("Telegram API error:", e);
+                        }
+                    }
+                    
+                    // If not in Telegram or API failed, use demo data
+                    if (!userData) {
+                        // Simulate API response
+                        await new Promise(resolve => setTimeout(resolve, 800));
+                        
+                        // 70% chance username is taken
+                        if (Math.random() > 0.3) {
+                            const names = ["Алексей", "Мария", "Иван", "Ольга", "Дмитрий", "Анна"];
+                            const randomName = names[Math.floor(Math.random() * names.length)];
+                            
+                            userData = {
+                                isTaken: true,
+                                first_name: randomName,
+                                username: username,
+                                photo: `https://i.pravatar.cc/150?u=${username}`,
+                                id: Math.floor(Math.random() * 1000000)
+                            };
+                        } else {
+                            userData = { isTaken: false };
+                        }
+                    }
+                    
+                    if (userData.isTaken) {
                         // Username is taken
-                        this.avatarText.innerHTML = '';
-                        this.userAvatar.innerHTML = `<img src="${result.userData.avatar}" alt="Avatar">`;
+                        this.userAvatar.innerHTML = userData.photo ? 
+                            `<img src="${userData.photo}" alt="User Avatar">` : 
+                            `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;font-size:20px;font-weight:bold;">${userData.first_name ? userData.first_name.charAt(0) : username.charAt(0)}</div>`;
+                        
                         this.resultUsername.textContent = `@${username}`;
-                        this.resultStatus.textContent = `Занят (${result.userData.firstName})`;
+                        this.resultStatus.textContent = `Занят${userData.first_name ? ` (${userData.first_name})` : ''}`;
                         this.resultStatus.style.color = 'var(--error)';
                         
                         // Add to history
                         this.addToHistory({
                             username: username,
                             status: 'taken',
-                            avatar: result.userData.avatar,
-                            name: result.userData.firstName,
+                            avatar: userData.photo || '',
+                            name: userData.first_name || '',
+                            userId: userData.id,
                             timestamp: new Date().toISOString()
                         });
                     } else {
                         // Username is available
-                        this.avatarText.textContent = '✓';
-                        this.userAvatar.innerHTML = '';
+                        this.userAvatar.innerHTML = '<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;font-size:20px;">✓</div>';
                         this.resultUsername.textContent = `@${username}`;
                         this.resultStatus.textContent = 'Свободен!';
                         this.resultStatus.style.color = 'var(--success)';
@@ -550,7 +475,7 @@
                     this.resultCard.style.display = 'block';
                 } catch (error) {
                     console.error('Error checking username:', error);
-                    alert('Произошла ошибка при проверке');
+                    alert('Ошибка при проверке юзернейма');
                 } finally {
                     this.checkButton.disabled = false;
                     this.checkButton.textContent = 'Проверить';
@@ -579,13 +504,15 @@
                     if (item.status === 'taken') {
                         historyItem.innerHTML = `
                             <div class="history-item-avatar">
-                                <img src="${item.avatar}" alt="${item.username}">
+                                ${item.avatar ? 
+                                    `<img src="${item.avatar}" alt="${item.username}">` : 
+                                    `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;font-weight:bold;">${item.name ? item.name.charAt(0) : item.username.charAt(0)}</div>`}
                             </div>
                             <div class="history-item-info">
                                 <div class="history-item-username">@${item.username}</div>
-                                <div class="history-item-status">Занят (${item.name})</div>
+                                <div class="history-item-status">Занят${item.name ? ` (${item.name})` : ''}</div>
                             </div>
-                            <div class="history-item-time">${new Date(item.timestamp).toLocaleTimeString()}</div>
+                            <div class="history-item-time">${new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                         `;
                     } else {
                         historyItem.innerHTML = `
@@ -594,7 +521,7 @@
                                 <div class="history-item-username">@${item.username}</div>
                                 <div class="history-item-status">Свободен</div>
                             </div>
-                            <div class="history-item-time">${new Date(item.timestamp).toLocaleTimeString()}</div>
+                            <div class="history-item-time">${new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                         `;
                     }
                     
@@ -611,21 +538,40 @@
             }
 
             loadProfile() {
-                // In a real Mini App, you would use Telegram.WebApp.initData
+                // Try to get user data from Telegram WebApp
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const tgUser = Telegram.WebApp.initDataUnsafe.user;
+                    
+                    if (tgUser) {
+                        this.profileAvatar.innerHTML = tgUser.photo_url ? 
+                            `<img src="${tgUser.photo_url}" alt="Profile Avatar">` : 
+                            `<div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;font-size:32px;font-weight:bold;">${tgUser.first_name ? tgUser.first_name.charAt(0) : 'U'}</div>`;
+                        
+                        this.profileName.textContent = tgUser.first_name || "Пользователь";
+                        this.profileUsername.textContent = tgUser.username ? `@${tgUser.username}` : "нет юзернейма";
+                        this.profileId.textContent = `ID: ${tgUser.id}`;
+                        return;
+                    }
+                }
+                
+                // Demo data if not in Telegram
                 const demoUser = {
-                    firstName: 'Telegram',
-                    username: 'demo_user',
-                    avatar: 'https://ui-avatars.com/api/?name=TG&background=2CA5E0&color=fff'
+                    first_name: "Demo",
+                    username: "demo_user",
+                    id: Math.floor(Math.random() * 1000000),
+                    photo_url: "https://i.pravatar.cc/150?u=demo"
                 };
                 
-                this.profileAvatarText.textContent = 'T';
-                this.profileAvatar.innerHTML = `<img src="${demoUser.avatar}" alt="Profile">`;
-                this.profileName.textContent = demoUser.firstName;
+                this.profileAvatar.innerHTML = `<img src="${demoUser.photo_url}" alt="Profile Avatar">`;
+                this.profileName.textContent = demoUser.first_name;
                 this.profileUsername.textContent = `@${demoUser.username}`;
+                this.profileId.textContent = `ID: ${demoUser.id}`;
             }
         }
 
         // Initialize the app
+        // Note: In production, you should get the bot token from your backend
+        const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN"; // Replace with your bot token
         new UsernameCheckerApp();
     </script>
 </body>
